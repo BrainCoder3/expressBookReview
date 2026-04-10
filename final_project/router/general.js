@@ -43,38 +43,50 @@ public_users.get('/',async function (req, res) {
 });
 
 // Get book details based on ISBN
-public_users.get('/isbn/:isbn',function (req, res) {
+public_users.get('/isbn/:isbn',async function (req, res) {
   //Write your code here
   const isbn =req.params.isbn;
   if (!isbn) {
     return res.status(404).send("No params")
   }
-  const book = books[isbn];
-  return res.status(200).json(JSON.stringify(book));
+  try {
+    const response = await axios.get(`http://localhost:5000/isbn/${isbn}`);
+    const book = response.data;
+    return res.status(200).json(JSON.stringify(book));
+  } catch (error) {
+    return res.status(500).json({message:`an error occured : ${error}`});
+  }
+  
+  
+ 
+  
  });
   
 // Get book details based on author
-public_users.get('/author/:author',function (req, res) {
-  //Write your code here
-  const author =req.params.author;
-  if (!author) {
-    return res.status(404).send("No params")
-  }
-  try {
-    const book =[];
-    const decoder = decodeURIComponent(author).trim().toLowerCase();
-    for (const key in books) {
-        if (books[key]['author'].trim().toLowerCase()===decoder) {
-            book.push(books[key])
-            
-        }
+public_users.get('/author/:author', async function (req, res) {
+    const authorName = req.params.author;
+  
+    try {
+      const response = await axios.get(`http://localhost:5000/author/${authorName}`);
+      return res.status(200).json(response.data);
+  
+    } catch (error) {
+      return res.status(404).json({ message: "Books by this author not found" });
     }
-    return res.status(200).json(JSON.stringify(book))
-  } catch (error) {
-    return res.status(404).send("error occured:",error)
-  }
- 
-});
+  });
+  
+  public_users.get('/title/:title', async function (req, res) {
+    const title = req.params.title;
+  
+    try {
+      const response = await axios.get(`http://localhost:5000/title/${title}`);
+      return res.status(200).json(response.data);
+  
+    } catch (error) {
+      return res.status(404).json({ message: "Books by this title not found" });
+    }
+  });  
+
 
 // Get all books based on isbn
 public_users.get('/isbn/:isbn',function (req, res) {
