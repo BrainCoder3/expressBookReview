@@ -1,0 +1,5 @@
+curl -X POST http://localhost:5000/register \
+     -H "Content-Type: application/json" \
+     -d '{"username": "Soulama", "password": "123"}'
+
+[{"username":"Soulama","password":"123"}]
